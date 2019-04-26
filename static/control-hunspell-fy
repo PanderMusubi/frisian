@@ -1,0 +1,15 @@
+Package: hunspell-fy
+Architecture: all
+Version: 1.0.0
+Priority: optional
+Section: text
+Maintainer: Pander <pander@users.sourceforge.net>
+Homepage: https://github.com/PanderMusubi/frisian
+Suggests: wfrisian
+Description: Frisian dictionary for Hunspell and Nuspell
+ This is the Frisian dictionary for use with the Hunspell and
+ Nuspell spell checkers, which are in its turn are used within the
+ LibreOffice and the Mozilla spell checkers.
+ .
+ Frisian, a West Germanic language spoken mostly in the province of Friesland
+ in the north of the Netherlands.

@@ -1,4 +1,4 @@
-# Fries
+# Frisian
 
 ![Frisian logo](images/logo.png?raw=true)
 
