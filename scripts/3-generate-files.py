@@ -1,4 +1,5 @@
 from datetime import datetime
+from locale import LC_ALL, setlocale, strxfrm
 from operator import itemgetter
 from os.path import isfile
 from xml.etree import ElementTree
@@ -6,7 +7,7 @@ from pprint import pprint
 from _operator import pos
 #import PyGnuplot
 
-pure_alphabet = ('a', 'b', 'c', 'e', 'g', 'h', 'j', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 't', 'u', 'v', 'w', 'y', "'", 'D', 'H', 'I', 'Q', 'S')
+pure_alphabet = ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', "'", 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'á', 'à', 'â', 'ä', 'é', 'è', 'ê', 'ë', 'í', 'ì', 'î', 'ï', 'ó', 'ò', 'ô', 'ö', 'ú', 'ù', 'û', 'ü', 'Á', 'À', 'Â', 'Ä', 'É', 'È', 'Ê', 'Ë', 'Í', 'Ì', 'Î', 'Ï', 'Ó', 'Ò', 'Ô', 'Ö', 'Ú', 'Ù', 'Û', 'Ü')
 alphabet = ('a', 'b', 'c', 'e', 'g', 'h', 'j', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 't', 'u', 'v', 'w', 'y', "'", 'D', 'H', 'I', 'Q', 'S', ' ')
 encountered_alphabet = {}
 
@@ -44,8 +45,17 @@ def parse(sentence):
 	
 def histogram(data, name):
 	print(name)
-	for value, count in sorted(data.items(), key=itemgetter(1)):
+	values = ''
+	for value, count in sorted(data.items(), key=itemgetter(1), reverse=True):
 		print('{}\t{}'.format(count, value)) 
+		values += value
+	print('{}'.format(values)) 
+	ret = values
+	values = ''
+	for value in sorted(data, key=strxfrm):
+		values += value
+	print('{}'.format(values)) 
+	return ret
 
 # def graph_pie(data, name):
 # 	x = list(data.keys())
@@ -103,26 +113,45 @@ if not isfile('../generated/fy_NL.dic'):
 	print('ERROR: Missing file ../generated/fy_NL.dic')
 	exit(1)
 
-flag_keepcase = ''
+try:
+	setlocale(LC_ALL, 'nl_NL.UTF-8')
+except:
+	try:
+		setlocale(LC_ALL, 'en_US.UTF-8')
+	except:
+		print('ERROR: Could not set sorting')
+		exit(1)
+
+option_keepcase = ''
+option_try = ''
 corrections = {}
 version = None
 chars_aff = {}
 for line in open('../generated/fy_NL.aff'):
 	line = line.strip()
+	# version
+	if not version and 'copyright' in line.lower() and 'version: ' in line.lower():
+		version = line.lower().split('version: ')[1].split()[0]
+		continue
+	# header or empty
+	if line == '' or line[0] == '#':
+		continue
+	# histogram
 	for char in line:
 		if char in chars_aff:
 			chars_aff[char] += 1
 		else:
 			chars_aff[char] = 1
-	if not version and 'copyright' in line.lower() and 'version: ' in line.lower():
-		version = line.lower().split('version: ')[1].split()[0]
+	# TRY
+	if line.startswith('TRY'):
+		option_try = line.split()[1]
 		continue
-	if line == '' or line[0] == '#':
+	# KEEPCASE
+	if line.startswith('KEEPCASE'):
+		option_keepcase = line.split()[1]
 		continue
-	if 'keepcase' in line.lower():
-		flag_keepcase = line.split()[1]
-		continue
-	if line.lower()[:3] == 'rep' and len(line.split()) == 3:
+	# REP
+	if line.startswith('REP') and len(line.split()) == 3:
 		option, error, word = line.split()
 		if error[0] != '^' or error[-1] != '$':
 			continue
@@ -131,7 +160,7 @@ for line in open('../generated/fy_NL.aff'):
 			corrections[error] = set()
 		corrections[error].add(word)
 		continue
-histogram(chars_aff, 'chars_aff')
+order_aff = histogram(chars_aff, 'chars_aff')
 print()
 
 errors = open('../generated/fy_NL.tsv', 'w')
@@ -139,16 +168,51 @@ for error, values in sorted(corrections.items()):
 	errors.write('{}\t{}\n'.format(error, sorted(values)[0])) #TODO
 
 chars_dic = {}
-dic = open('../generated/fy_NL.dic')
-for line in open('../generated/fy_NL.aff'):
+first = True
+for line in open('../generated/fy_NL.dic'):
+	if first:
+		first = False
+		continue
 	line = line.strip()
+	flags = None
+	if '/' in line:
+		index = line.index('/')
+		if line[index-1] != '\\':
+			flags = line[index+1:]
+			line = line[:index]
 	for char in line:
 		if char in chars_dic:
 			chars_dic[char] += 1
 		else:
 			chars_dic[char] = 1
-histogram(chars_dic, 'chars_dic')
+order_dic = histogram(chars_dic, 'chars_dic')
+
 print()
+print(option_try)
+print()
+incl = ''
+excl = ''
+for char in order_dic:
+	if char in option_try:
+		incl += char
+		excl += ' '
+	else:
+		incl += ' '
+		excl += char
+print(incl)
+print(excl)
+print()
+incl = ''
+excl = ''
+for char in order_aff:
+	if char in option_try:
+		incl += char
+		excl += ' '
+	else:
+		incl += ' '
+		excl += char
+print(incl)
+print(excl)
 
 exit(0)
 
