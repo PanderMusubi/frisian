@@ -4,6 +4,7 @@
 
 Word list and spell checking for Frisian (fy), a West Germanic language spoken
 mostly in the province of Friesland (*Fryslân*) in the north of the Netherlands.
+Note that with Frisian here, West Frisian is implied.
 
 
 ## Source
@@ -30,7 +31,7 @@ The word list in Latin script is in the ASCII file TODO
 
 See the section on installation to make the word lists available as
 `/usr/share/dict/frisian` and as symbolic links `/usr/share/dict/frysk` and
-`/usr/share/dict/fries` TODO
+`/usr/share/dict/fries`.
 
 
 ## Spell checker
@@ -58,11 +59,10 @@ To build, tast and package all the files, simply run the scripts in the
 1. `./1-download-language-support.sh`
 2. `./2-extract-files.sh`
 3. `./3-generate-files.sh` (which calls `3-generate-files.py`)
-4. `./4-transliterate.py` (see the result in directory `generated`)
-5. `./5-test-spell-checking.sh` (see the result in directory `test`)
-6. `./6-package.sh` (see the result in directory `packages`)
+5. `./4-test-spell-checking.sh` (see the result in directory `test`)
+6. `./5-package.sh` (see the result in directory `packages`)
 
-Note to update TODO in `static/`
+Note to update version number `static/control*` before building a new package.
 
 
 ## See also
