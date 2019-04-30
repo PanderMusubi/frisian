@@ -19,7 +19,6 @@ if [ ! -e ../test ]; then
 fi
 iconv -f ISO-8859-1 -t UTF-8//IGNORE extracted/fy_NL.dic -o ../generated/fy_NL.dic
 iconv -f ISO-8859-1 -t UTF-8//IGNORE extracted/fy_NL.aff -o ../generated/fy_NL.aff
-sed -i -e 's/^TRY/SET UTF-8\nTRY/' ../generated/fy_NL.aff
 
 python3 ../scripts/3-generate-files.py
 
