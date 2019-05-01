@@ -94,7 +94,7 @@ for line in open('../generated/fy_NL.aff'):
 errors = open('../test/fy_NL.tsv', 'w')
 for error, values in sorted(corrections.items()):
 	errors.write('{}\t{}\n'.format(error, sorted(values)[0])) #TODO
-tests = open('../test/test_words.txt', 'w')
+tests = open('../test/test_incorrect_words_with_suggestion.txt', 'w')
 for test, values in sorted(corrections.items()):
 	tests.write('{}\n'.format(test))
 

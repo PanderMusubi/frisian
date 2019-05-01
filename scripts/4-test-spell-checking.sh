@@ -19,8 +19,8 @@ echo 'INFO: Testing '`wc -l frisian | awk '{print $1}'`' words from ../generated
 hunspell -d fy_NL -a frisian | grep '^#' > ../test/words_incorrect.txt
 echo 'INFO: '`wc -l ../test/words_incorrect.txt | awk '{print $1}'`' words are incorrect, see ../test/words_incorrect.txt'
 
-echo 'INFO: Testing '`wc -l ../test/test_words.txt | awk '{print $1}'`' words from ../test/test_words.txt'
-hunspell -d fy_NL -a ../test/test_words.txt | grep '^#' > ../test/tests_incorrect.txt
-echo 'INFO: '`wc -l ../test/tests_incorrect.txt | awk '{print $1}'`' words are incorrect, see ../test/tests_incorrect.txt'
+echo 'INFO: Testing '`wc -l ../test/test_incorrect_words_with_suggestion.txt | awk '{print $1}'`' words from ../test/test_incorrect_words_with_suggestion.txt'
+hunspell -d fy_NL -a ../test/test_incorrect_words_with_suggestion.txt | grep '^&' > ../test/tests_incorrect_with_suggestion.txt
+echo 'INFO: '`wc -l ../test/tests_incorrect_with_suggestion.txt | awk '{print $1}'`' words are incorrect but have suggestions, see ../test/tests_incorrect_with_suggestion.txt'
 
 cd ../scripts
